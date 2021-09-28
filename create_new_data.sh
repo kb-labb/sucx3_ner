@@ -10,7 +10,7 @@ cmd="python compare_data.py \
 #$cmd
 
 data="./new_data"
-for data in "./new_data" "./new_data/martin_data";
+for data in "./data" "./data/martin_data";
 do
     suffix="lower.both"
     cmd="python lowercase_ner_data.py \

@@ -481,8 +481,10 @@ def main():
 ###
         if data_args.tune:
             tune_config = {
-                        "per_device_train_batch_size": 64,
-                        "per_device_eval_batch_size": 64,
+                        # "per_device_train_batch_size": 64,
+                        # "per_device_eval_batch_size": 64,
+                        # "per_device_train_batch_size": 32,
+                        # "per_device_eval_batch_size": 32,
                         "num_train_epochs": tune.choice([2, 3, 4, 5]),
                         "max_steps": -1,  # Used for smoke test.
                     }
@@ -491,11 +493,11 @@ def main():
                             time_attr="training_iteration",
                             metric="eval_f1",
                             mode="max",
-                            perturbation_interval=1,
+                            perturbation_interval=training_args.eval_steps,  # args eval steps
                             hyperparam_mutations={
                                             "weight_decay": tune.uniform(0.0, 0.3),
                                             "learning_rate": tune.uniform(1e-5, 1e-3),
-                                            "per_device_train_batch_size": [16, 32, 64],
+                                            # "per_device_train_batch_size": [16, 32, 64],
                                         })
 
             reporter = CLIReporter(
@@ -509,12 +511,13 @@ def main():
                                             "eval_accuracy", "eval_loss", "eval_precision", "eval_recall", "eval_f1", "epoch", "training_iteration"
                                         ])
 
+            """
             trainer.hyperparameter_search(
                                 hp_space=lambda _: tune_config,
                                 backend="ray",
-                                n_trials=50,
+                                n_trials=3,
                                 resources_per_trial={
-                                                "cpu": 2,
+                                                "cpu": 4,
                                                 "gpu": 1
                                             },
                                 scheduler=scheduler,
@@ -522,9 +525,26 @@ def main():
                                 checkpoint_score_attr="training_iteration",
                                 stop=None,
                                 progress_reporter=reporter,
-                                local_dir="./ray_results/",
+                                local_dir="/home/joey/extra_space/ray_results/",
                                 name=data_args.tune,
                                 log_to_file=True)
+            """
+            trainer.hyperparameter_search(
+                hp_space=lambda _: tune_config,
+                backend="ray",
+                n_trials=3,
+                resources_per_trial={
+                    "cpu": 4,
+                    "gpu": 1
+                },
+                scheduler=scheduler,
+                keep_checkpoints_num=1,
+                checkpoint_score_attr="training_iteration",
+                stop=None,
+                progress_reporter=reporter,
+                local_dir="/home/joey/extra_space/ray_results/",
+                name=data_args.tune,
+                log_to_file=True)
 ###
 #        trainer.hyperparameter_search(
 #                direction="maximize", 
