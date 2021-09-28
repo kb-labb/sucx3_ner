@@ -128,11 +128,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-=======
+
 logs
 .vscode
 .env
 .mypy_cache
 ray_results
 models
->>>>>>> b6884e2... first commit
+data
