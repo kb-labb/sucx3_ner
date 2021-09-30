@@ -20,11 +20,11 @@ run_cmd="python run_ner.py --model_name_or_path KB/bert-base-swedish-cased \
                   --task_name ner \
                   --cache_dir models \
                   --return_entity_level_metrics 0 \
-                  --per_device_train_batch_size 64 \
-                  --per_device_eval_batch_size 64 \
+                  --per_device_train_batch_size 32 \
+                  --per_device_eval_batch_size 32 \
                   --overwrite_output_dir \
                   --gradient_accumulation_steps 1
-                  --num_train_epochs 5 \
+                  --num_train_epochs 2 \
                   --evaluation_strategy steps \
                   --eval_steps 500 \
                   --skip_memory_metrics \

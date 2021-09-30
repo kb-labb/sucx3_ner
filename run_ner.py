@@ -483,9 +483,10 @@ def main():
             tune_config = {
                         # "per_device_train_batch_size": 64,
                         # "per_device_eval_batch_size": 64,
-                        # "per_device_train_batch_size": 32,
-                        # "per_device_eval_batch_size": 32,
+                        "per_device_train_batch_size": 32,
+                        "per_device_eval_batch_size": 32,
                         "num_train_epochs": tune.choice([2, 3, 4, 5]),
+                        # "num_train_epochs": training_args.num_train_epochs,
                         "max_steps": -1,  # Used for smoke test.
                     }
 
@@ -493,11 +494,13 @@ def main():
                             time_attr="training_iteration",
                             metric="eval_f1",
                             mode="max",
-                            perturbation_interval=training_args.eval_steps,  # args eval steps
+                            perturbation_interval=1,  # args eval steps
+                            # perturbation_interval=training_args.eval_steps,  # args eval steps
                             hyperparam_mutations={
                                             "weight_decay": tune.uniform(0.0, 0.3),
                                             "learning_rate": tune.uniform(1e-5, 1e-3),
                                             # "per_device_train_batch_size": [16, 32, 64],
+                                            "per_device_train_batch_size": [16, 32],
                                         })
 
             reporter = CLIReporter(
@@ -532,9 +535,9 @@ def main():
             trainer.hyperparameter_search(
                 hp_space=lambda _: tune_config,
                 backend="ray",
-                n_trials=3,
+                n_trials=1,
                 resources_per_trial={
-                    "cpu": 4,
+                    "cpu": 2,
                     "gpu": 1
                 },
                 scheduler=scheduler,
@@ -551,19 +554,20 @@ def main():
 #                backend="ray", 
 #                n_trials=10 # number of trials
 #                )
- 
-        train_result = trainer.train(resume_from_checkpoint=checkpoint)
-        metrics = train_result.metrics
-        trainer.save_model()  # Saves the tokenizer too for easy upload
 
-        max_train_samples = (
-            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
-        )
-        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
+        else:
+            train_result = trainer.train(resume_from_checkpoint=checkpoint)
+            metrics = train_result.metrics
+            trainer.save_model()  # Saves the tokenizer too for easy upload
 
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
-        trainer.save_state()
+            max_train_samples = (
+                data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
+            )
+            metrics["train_samples"] = min(max_train_samples, len(train_dataset))
+
+            trainer.log_metrics("train", metrics)
+            trainer.save_metrics("train", metrics)
+            trainer.save_state()
 
     # Evaluation
     if training_args.do_eval:
