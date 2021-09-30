@@ -1,13 +1,14 @@
 import json
 import argparse
 import random
-from typing import Iterable, List, Union, Tuple, TypeVar, Any
+from typing import Iterable, List, Union, Tuple, TypeVar, Any, Dict
 from typing_extensions import TypedDict
 from tqdm import tqdm
+from pprint import pprint
 
 
 A = Union[int, List[str]]
-B = Tuple[str, int, str]
+B = Tuple[str, int, List[str], List[str]]
 C = TypeVar("C")
 Sentence = TypedDict("Sentence", {"id": int,
                                   "tokens": List[str],
@@ -29,11 +30,11 @@ def read_json(fn: str) -> Iterable[Sentence]:
             yield json.loads(line)
 
 
-def collect_triples(fns: List[str]) -> List[B]:
+def collect_tuples(fns: List[str]) -> List[B]:
     data = []
     for fn in fns:
         for sentence in read_json(fn):
-            data.append((fn, sentence["id"], " ".join(sentence["tokens"])))
+            data.append((fn, sentence["id"], sentence["tokens"], sentence["ner_tags"]))
     return data
 
 
@@ -86,29 +87,65 @@ def write_data(data: List[Any], fn: str) -> None:
             print(json.dumps(element), file=fh)
 
 
+def map_tags(both_fn: str) -> Tuple[Dict[str, Dict[str, int]]]:
+    a2b = {}
+    b2a = {}
+    with open(both_fn) as fh:
+        for line in fh:
+            jline = json.loads(line)
+            tags_a = jline[0][3]
+            tags_b = jline[1][3]
+            for a, b in zip(tags_a, tags_b):
+                if a not in a2b:
+                    a2b[a] = {}
+                if b not in a2b[a]:
+                    a2b[a][b] = 0
+                a2b[a][b] += 1
+                if b not in b2a:
+                    b2a[b] = {}
+                if a not in b2a[b]:
+                    b2a[b][a] = 0
+                b2a[b][a] += 1
+    return a2b, b2a
+
+
+
 def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--files_a", nargs="+")
     parser.add_argument("--files_b", nargs="+")
     parser.add_argument("--remove_doubles", action="store_true")
+    parser.add_argument("--compare", action="store_true")
+    parser.add_argument("--map_tags", action="store_true")
     return parser.parse_args()
 
 
 def main():
     args = get_args()
+    assert sum([args.remove_doubles, args.compare, args.map_tags]) == 1
+
     if args.remove_doubles:
         no_doubles = remove_doubles(args.files_a)
         train, dev, test = split_data(no_doubles)
         for d, fn in zip([train, dev, test], args.files_b):
             write_data(d, fn)
-    else:
-        data_a = collect_triples(args.files_a)
-        data_b = collect_triples(args.files_b)
+    elif args.compare:
+        data_a = collect_tuples(args.files_a)
+        data_b = collect_tuples(args.files_b)
         rest_a, rest_b, both = compare_data(data_a, data_b)
-        print(rest_a)
-        print(rest_b)
-        print(both)
+
+        write_data(rest_a, "rest_a.jsonl")
+        write_data(rest_b, "rest_b.jsonl")
+        write_data(both, "both.jsonl")
+
         print(f"rest_a: {len(rest_a)}\nrest_b: {len(rest_b)}\nboth: {len(both)}")
+    elif args.map_tags:
+        both = args.files_a[0]
+        a2b, b2a = map_tags(both)
+        pprint(a2b)
+        pprint(b2a)
+
+
 
 
 if __name__ == "__main__":
