@@ -87,9 +87,9 @@ def write_data(data: List[Any], fn: str) -> None:
             print(json.dumps(element), file=fh)
 
 
-def map_tags(both_fn: str) -> Tuple[Dict[str, Dict[str, int]]]:
-    a2b = {}
-    b2a = {}
+def map_tags(both_fn: str) -> Tuple[Dict[str, Dict[str, int]], Dict[str, Dict[str, int]]]:
+    a2b: Dict[str, Dict[str, int]] = {}
+    b2a: Dict[str, Dict[str, int]] = {}
     with open(both_fn) as fh:
         for line in fh:
             jline = json.loads(line)
@@ -107,7 +107,6 @@ def map_tags(both_fn: str) -> Tuple[Dict[str, Dict[str, int]]]:
                     b2a[b][a] = 0
                 b2a[b][a] += 1
     return a2b, b2a
-
 
 
 def get_args() -> argparse.Namespace:
@@ -144,8 +143,6 @@ def main():
         a2b, b2a = map_tags(both)
         pprint(a2b)
         pprint(b2a)
-
-
 
 
 if __name__ == "__main__":
