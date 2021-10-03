@@ -8,9 +8,9 @@ from pprint import pprint
 
 
 A = Union[int, List[str]]
-B = Tuple[str, int, List[str], List[str]]
+B = Tuple[str, str, List[str], List[str]]
 C = TypeVar("C")
-Sentence = TypedDict("Sentence", {"id": int,
+Sentence = TypedDict("Sentence", {"id": str,
                                   "tokens": List[str],
                                   "ner_tags": List[str],
                                   "pos_tags": List[str]

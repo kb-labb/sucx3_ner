@@ -70,8 +70,8 @@ def conllu_to_json(fn_conllu: str, fn_json: str) -> None:
                    # zip(columns[10], columns[11])]  # sic
                    zip(columns[8], columns[9])]  # suc
             jsen["tokens"] = tokens
-            jsen["pos"] = pos
-            jsen["ner"] = ner
+            jsen["pos_tags"] = pos
+            jsen["ner_tags"] = ner
             print(json.dumps(jsen), file=fh)
 
 
