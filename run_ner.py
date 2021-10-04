@@ -18,14 +18,17 @@ Fine-tuning the library models for token classification.
 """
 # You can also adapt this script on your own token classification task and datasets. Pointers for this are left as
 # comments.
-
+import datetime
 import logging
 import os
 import sys
+import time
 from dataclasses import dataclass, field
 from typing import Optional
 from ray import tune
-from ray.tune.schedulers import PopulationBasedTraining
+from ray.tune.suggest.hyperopt import HyperOptSearch
+from ray.tune.suggest.bohb import TuneBOHB
+from ray.tune.schedulers import PopulationBasedTraining, HyperBandForBOHB, ASHAScheduler
 from ray.tune import CLIReporter
 
 import numpy as np
@@ -310,6 +313,7 @@ def main():
         use_auth_token=True if model_args.use_auth_token else None,
         add_prefix_space=True if model_args.add_prefix_space else False,
     )
+    """
     model = AutoModelForTokenClassification.from_pretrained(
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
@@ -318,6 +322,7 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
+    """
 
     # Tokenizer check: this script requires a fast tokenizer.
     if not isinstance(tokenizer, PreTrainedTokenizerFast):
@@ -451,13 +456,16 @@ def main():
             model_args.model_name_or_path,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
             config=config,
-            cache_dir=model_args.cache_dir,
+            # cache_dir=model_args.cache_dir,
             revision=model_args.model_revision,
             use_auth_token=True if model_args.use_auth_token else None,
         )
         return model
-        return AutoModelForTokenClassification.from_pretrained(
-                    model_args.model_name_or_path, return_dict=True)
+        # return AutoModelForTokenClassification.from_pretrained(
+                    # model_args.model_name_or_path, return_dict=True)
+
+    # train_dataset = train_dataset.shard(index=1, num_shards=4)
+    # eval_dataset = eval_dataset.shard(index=1, num_shards=4)
     # Initialize our Trainer
     trainer = Trainer(
         #model=model,
@@ -467,7 +475,7 @@ def main():
         tokenizer=tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
-        model_init=model_init,
+        model_init=model_init
     )
 
     # Training
@@ -483,35 +491,59 @@ def main():
             tune_config = {
                         # "per_device_train_batch_size": 64,
                         # "per_device_eval_batch_size": 64,
-                        "per_device_train_batch_size": 32,
-                        "per_device_eval_batch_size": 32,
-                        "num_train_epochs": tune.choice([2, 3, 4, 5]),
+                        # "per_device_train_batch_size": 8,
+                        # "per_device_eval_batch_size": 8,
+                        # "num_train_epochs": tune.choice([2, 3, 4, 5]),
                         # "num_train_epochs": training_args.num_train_epochs,
-                        "max_steps": -1,  # Used for smoke test.
+                        # "weight_decay": tune.uniform(0.0, 0.3),
+                        # "learning_rate": tune.uniform(1e-5, 1e-3),
+                        "weight_decay": tune.uniform(0.0, 0.1),
+                        # "learning_rate": tune.uniform(5e-6, 1e-4),
+                        "learning_rate": tune.uniform(5e-6, 5e-5),
+                        # "max_steps": -1,  # Use 1 for smoke test, else -1.
                     }
-
+            """
             scheduler = PopulationBasedTraining(
                             time_attr="training_iteration",
                             metric="eval_f1",
                             mode="max",
-                            perturbation_interval=1,  # args eval steps
-                            # perturbation_interval=training_args.eval_steps,  # args eval steps
+                            # perturbation_interval=1,  # args eval steps
+                            perturbation_interval=training_args.eval_steps,  # args eval steps
                             hyperparam_mutations={
                                             "weight_decay": tune.uniform(0.0, 0.3),
                                             "learning_rate": tune.uniform(1e-5, 1e-3),
                                             # "per_device_train_batch_size": [16, 32, 64],
-                                            "per_device_train_batch_size": [16, 32],
+                                            # "per_device_train_batch_size": [16, 32],
+                                            # "per_device_train_batch_size": [8],
                                         })
+            """
+
+            scheduler = HyperBandForBOHB(
+                            time_attr="training_iteration",
+                            # metric="eval_f1",
+                            # mode="max",
+                            max_t=50,
+                            reduction_factor=3,
+                            stop_last_trials=True
+                            )
+
+            bohb_search = TuneBOHB(
+                # metric="eval_f1",
+                # mode="max"
+                # space=config_space,  # If you want to set the space manually
+                # max_concurrent=4
+            )
 
             reporter = CLIReporter(
                             parameter_columns={
                                             "weight_decay": "w_decay",
                                             "learning_rate": "lr",
-                                            "per_device_train_batch_size": "train_bs/gpu",
-                                            "num_train_epochs": "num_epochs"
+                                            # "per_device_train_batch_size": "train_bs/gpu",
+                                            # "num_train_epochs": "num_epochs"
                                         },
                             metric_columns=[
-                                            "eval_accuracy", "eval_loss", "eval_precision", "eval_recall", "eval_f1", "epoch", "training_iteration"
+                                            "eval_accuracy", "eval_loss", "eval_precision", "eval_recall", "eval_f1",
+                                            "epoch", "training_iteration"
                                         ])
 
             """
@@ -532,42 +564,55 @@ def main():
                                 name=data_args.tune,
                                 log_to_file=True)
             """
-            trainer.hyperparameter_search(
+            hps_start_time = time.time()
+            best_run = trainer.hyperparameter_search(
                 hp_space=lambda _: tune_config,
+                metric="eval_f1",
+                mode="max",
+                direction="maximize",
                 backend="ray",
-                n_trials=1,
+                n_trials=9,
                 resources_per_trial={
                     "cpu": 2,
                     "gpu": 1
                 },
                 scheduler=scheduler,
+                search_alg=bohb_search,
                 keep_checkpoints_num=1,
                 checkpoint_score_attr="training_iteration",
                 stop=None,
                 progress_reporter=reporter,
-                local_dir="/home/joey/extra_space/ray_results/",
+                # local_dir="/home/joey/extra_space/ray_results/",
+                local_dir="/home/joey/code/kb/ner_kram/ray_results/",
                 name=data_args.tune,
-                log_to_file=True)
-###
-#        trainer.hyperparameter_search(
-#                direction="maximize", 
-#                backend="ray", 
-#                n_trials=10 # number of trials
-#                )
-
-        else:
-            train_result = trainer.train(resume_from_checkpoint=checkpoint)
-            metrics = train_result.metrics
-            trainer.save_model()  # Saves the tokenizer too for easy upload
-
-            max_train_samples = (
-                data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
+                log_to_file=True,
+                fail_fast=True
             )
-            metrics["train_samples"] = min(max_train_samples, len(train_dataset))
 
-            trainer.log_metrics("train", metrics)
-            trainer.save_metrics("train", metrics)
-            trainer.save_state()
+            # Configure trainer object to use best hyperparameters found
+            print("***** Best Hyperparameters found *****")
+            for n, v in best_run.hyperparameters.items():
+                if n != 'max_steps':  # Use original max_steps
+                    setattr(trainer.args, n, v)
+                    print(f"{n}: {v}")
+
+            time_str_hps = datetime.timedelta(seconds=round(time.time() - hps_start_time))
+            print(f"Time Elapsed HPS (h:mm:ss): {time_str_hps}")
+            print("*" * 10)
+            return
+
+        train_result = trainer.train(resume_from_checkpoint=checkpoint)
+        metrics = train_result.metrics
+        trainer.save_model()  # Saves the tokenizer too for easy upload
+
+        max_train_samples = (
+            data_args.max_train_samples if data_args.max_train_samples is not None else len(train_dataset)
+        )
+        metrics["train_samples"] = min(max_train_samples, len(train_dataset))
+
+        trainer.log_metrics("train", metrics)
+        trainer.save_metrics("train", metrics)
+        trainer.save_state()
 
     # Evaluation
     if training_args.do_eval:
@@ -610,5 +655,12 @@ def _mp_fn(index):
     main()
 
 
-if __name__ == "__main__":
+def mainTimeWrapper():
+    start_time = time.time()
     main()
+    time_str = datetime.timedelta(seconds=round(time.time() - start_time))
+    print(f"Time Elapsed Total (h:mm:ss): {time_str}")
+
+
+if __name__ == "__main__":
+    mainTimeWrapper()

@@ -9,29 +9,30 @@ cmd="python compare_data.py \
             --files_b new_data/train.jsonl new_data/dev.jsonl new_data/test.jsonl"
 #$cmd
 
-data="./new_data"
-for data in "./data" "./data/martin_data";
-do
-    suffix="lower.both"
-    cmd="python lowercase_ner_data.py \
-                --infiles  ${data}/train.jsonl ${data}/dev.jsonl ${data}/test.jsonl \
-                --outfiles ${data}/train.${suffix}.jsonl ${data}/dev.${suffix}.jsonl ${data}/test.${suffix}.jsonl \
-                --both"
-    $cmd
+# data="./new_data"
+# for data in "./data" "./data/martin_data";
+# do
+data="./data"
+suffix="lower.both"
+cmd="python lowercase_ner_data.py \
+            --infiles  ${data}/train.jsonl ${data}/dev.jsonl ${data}/test.jsonl \
+            --outfiles ${data}/train.${suffix}.jsonl ${data}/dev.${suffix}.jsonl ${data}/test.${suffix}.jsonl \
+            --both"
+$cmd
 
-    suffix="lower.only"
-    cmd="python lowercase_ner_data.py \
-                --infiles  ${data}/train.jsonl ${data}/dev.jsonl ${data}/test.jsonl \
-                --outfiles ${data}/train.${suffix}.jsonl ${data}/dev.${suffix}.jsonl ${data}/test.${suffix}.jsonl"
-    $cmd
+suffix="lower.only"
+cmd="python lowercase_ner_data.py \
+            --infiles  ${data}/train.jsonl ${data}/dev.jsonl ${data}/test.jsonl \
+            --outfiles ${data}/train.${suffix}.jsonl ${data}/dev.${suffix}.jsonl ${data}/test.${suffix}.jsonl"
+$cmd
 
-    suffix="ne_lower.both"
-    cmd="python lowercase_ner_data.py \
-                --infiles  ${data}/train.jsonl ${data}/dev.jsonl ${data}/test.jsonl \
-                --outfiles ${data}/train.${suffix}.jsonl ${data}/dev.${suffix}.jsonl ${data}/test.${suffix}.jsonl \
-                --both \
-                --ne_only"
-    $cmd
+suffix="ne_lower.both"
+cmd="python lowercase_ner_data.py \
+            --infiles  ${data}/train.jsonl ${data}/dev.jsonl ${data}/test.jsonl \
+            --outfiles ${data}/train.${suffix}.jsonl ${data}/dev.${suffix}.jsonl ${data}/test.${suffix}.jsonl \
+            --both \
+            --ne_only"
+$cmd
 
     suffix="ne_lower.only"
     cmd="python lowercase_ner_data.py \
@@ -39,4 +40,4 @@ do
                 --outfiles ${data}/train.${suffix}.jsonl ${data}/dev.${suffix}.jsonl ${data}/test.${suffix}.jsonl \
                 --ne_only"
     $cmd
-done
+# done
