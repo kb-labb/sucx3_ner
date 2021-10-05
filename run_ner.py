@@ -25,11 +25,6 @@ import sys
 import time
 from dataclasses import dataclass, field
 from typing import Optional
-from ray import tune
-from ray.tune.suggest.hyperopt import HyperOptSearch
-from ray.tune.suggest.bohb import TuneBOHB
-from ray.tune.schedulers import PopulationBasedTraining, HyperBandForBOHB, ASHAScheduler
-from ray.tune import CLIReporter
 
 import numpy as np
 from datasets import ClassLabel, load_dataset, load_metric
@@ -52,6 +47,7 @@ from transformers.utils import check_min_version
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 # check_min_version("4.5.0.dev0")
+from hps_ner import hyperparameter_tune
 
 logger = logging.getLogger(__name__)
 
@@ -167,6 +163,15 @@ class DataTrainingArguments:
     )
     tune: str = field(
         default=None, metadata={"help": "tune with ray tune: give name of the tuning experiment"}
+    )
+    tune_alg: str = field(
+        default='BOHB', metadata={"help": "The HPO algorithm that ray tune will use, e.g. BOHB or PBT"}
+    )
+    tune_trials: int = field(
+        default=5, metadata={"help": "The number of trials that will be explored in the HPO."}
+    )
+    tune_local_dir: str = field(
+        default="~/ray_results/", metadata={"help": "The directory in which the ray tune experiment folder will be."}
     )
 
     def __post_init__(self):
@@ -464,8 +469,10 @@ def main():
         # return AutoModelForTokenClassification.from_pretrained(
                     # model_args.model_name_or_path, return_dict=True)
 
-    # train_dataset = train_dataset.shard(index=1, num_shards=4)
-    # eval_dataset = eval_dataset.shard(index=1, num_shards=4)
+    # Uncomment to shard and use small subset of dataset for testing purposes
+    # train_dataset = train_dataset.shard(index=1, num_shards=50)
+    # eval_dataset = eval_dataset.shard(index=1, num_shards=30)
+
     # Initialize our Trainer
     trainer = Trainer(
         #model=model,
@@ -488,107 +495,9 @@ def main():
             checkpoint = None
 ###
         if data_args.tune:
-            tune_config = {
-                        # "per_device_train_batch_size": 64,
-                        # "per_device_eval_batch_size": 64,
-                        # "per_device_train_batch_size": 8,
-                        # "per_device_eval_batch_size": 8,
-                        # "num_train_epochs": tune.choice([2, 3, 4, 5]),
-                        # "num_train_epochs": training_args.num_train_epochs,
-                        # "weight_decay": tune.uniform(0.0, 0.3),
-                        # "learning_rate": tune.uniform(1e-5, 1e-3),
-                        "weight_decay": tune.uniform(0.0, 0.1),
-                        # "learning_rate": tune.uniform(5e-6, 1e-4),
-                        "learning_rate": tune.uniform(5e-6, 5e-5),
-                        # "max_steps": -1,  # Use 1 for smoke test, else -1.
-                    }
-            """
-            scheduler = PopulationBasedTraining(
-                            time_attr="training_iteration",
-                            metric="eval_f1",
-                            mode="max",
-                            # perturbation_interval=1,  # args eval steps
-                            perturbation_interval=training_args.eval_steps,  # args eval steps
-                            hyperparam_mutations={
-                                            "weight_decay": tune.uniform(0.0, 0.3),
-                                            "learning_rate": tune.uniform(1e-5, 1e-3),
-                                            # "per_device_train_batch_size": [16, 32, 64],
-                                            # "per_device_train_batch_size": [16, 32],
-                                            # "per_device_train_batch_size": [8],
-                                        })
-            """
-
-            scheduler = HyperBandForBOHB(
-                            time_attr="training_iteration",
-                            # metric="eval_f1",
-                            # mode="max",
-                            max_t=50,
-                            reduction_factor=3,
-                            stop_last_trials=True
-                            )
-
-            bohb_search = TuneBOHB(
-                # metric="eval_f1",
-                # mode="max"
-                # space=config_space,  # If you want to set the space manually
-                # max_concurrent=4
-            )
-
-            reporter = CLIReporter(
-                            parameter_columns={
-                                            "weight_decay": "w_decay",
-                                            "learning_rate": "lr",
-                                            # "per_device_train_batch_size": "train_bs/gpu",
-                                            # "num_train_epochs": "num_epochs"
-                                        },
-                            metric_columns=[
-                                            "eval_accuracy", "eval_loss", "eval_precision", "eval_recall", "eval_f1",
-                                            "epoch", "training_iteration"
-                                        ])
-
-            """
-            trainer.hyperparameter_search(
-                                hp_space=lambda _: tune_config,
-                                backend="ray",
-                                n_trials=3,
-                                resources_per_trial={
-                                                "cpu": 4,
-                                                "gpu": 1
-                                            },
-                                scheduler=scheduler,
-                                keep_checkpoints_num=1,
-                                checkpoint_score_attr="training_iteration",
-                                stop=None,
-                                progress_reporter=reporter,
-                                local_dir="/home/joey/extra_space/ray_results/",
-                                name=data_args.tune,
-                                log_to_file=True)
-            """
+            # See hps_ner.py
             hps_start_time = time.time()
-            best_run = trainer.hyperparameter_search(
-                hp_space=lambda _: tune_config,
-                metric="eval_f1",
-                mode="max",
-                direction="maximize",
-                backend="ray",
-                n_trials=9,
-                resources_per_trial={
-                    "cpu": 2,
-                    "gpu": 1
-                },
-                scheduler=scheduler,
-                search_alg=bohb_search,
-                keep_checkpoints_num=1,
-                checkpoint_score_attr="training_iteration",
-                stop=None,
-                progress_reporter=reporter,
-                # local_dir="/home/joey/extra_space/ray_results/",
-                local_dir="/home/joey/code/kb/ner_kram/ray_results/",
-                name=data_args.tune,
-                log_to_file=True,
-                fail_fast=True
-            )
-
+            best_run = hyperparameter_tune(trainer, training_args, data_args)
             # Configure trainer object to use best hyperparameters found
             print("***** Best Hyperparameters found *****")
             for n, v in best_run.hyperparameters.items():
