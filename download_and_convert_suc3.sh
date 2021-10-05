@@ -7,7 +7,9 @@ mkdir $data/raw
 
 # Download SUC 3.0
 wget http://spraakbanken.gu.se/lb/resurser/meningsmangder/suc3.xml.bz2 -P $data/raw
-tar xjvf $data/raw/suc3.xml.bz2 -C $data/raw
+cd $data/raw
+bunzip2 suc3.xml.bz2
+cd -
 
 # convert xml to conll format
 mkdir $data/base
@@ -25,7 +27,7 @@ python suc_handler.py --infile $data/base/suc3.$STNMT.conll --outfile $data/base
 
 # create canonical split based on original tag distribution
 mkdir $data/$OT
-python split_and_filter.py --infile $data/base/suc3.jsonl  --outfolder $data/$OT --seed 12345
+python split_and_filter.py --infile $data/base/suc3.$OT.jsonl  --outfolder $data/$OT --seed 12345
 
 
 # recreate canonical split based on original tag distribution's split_ids
