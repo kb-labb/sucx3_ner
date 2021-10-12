@@ -3,37 +3,42 @@
 which python
 /bin/hostname -s
 
-DATA_SUFFIX=".lower.only"
+DATA_VAR="original_tags"
+TUNE_ALG="PBT"  # BOHB
+dv=$(echo ${DATA_VAR} | sed 's/\//_/g')
+TUNE_NAME="${dv}_${TUNE_ALG}"
+
 # DATA_SUFFIX=""
 # --train_file ./data/martin_data/train.lower.only.jsonl \
   #                  --validation_file ./data/martin_data/dev.lower.only.jsonl \
   #                  --test_file ./data/martin_data/test.lower.only.jsonl \
 
 run_cmd="python run_ner.py --model_name_or_path KB/bert-base-swedish-cased \
-                  --train_file ./data/train$DATA_SUFFIX.jsonl \
-                  --validation_file ./data/dev$DATA_SUFFIX.jsonl \
-                  --test_file ./data/test$DATA_SUFFIX.jsonl \
-                  --output_dir KB-BERT-ner-regular_lower_only \
+                  --train_file ./data/${DATA_VAR}/train.jsonl \
+                  --validation_file ./data/${DATA_VAR}/dev.jsonl \
+                  --test_file ./data/${DATA_VAR}/test.jsonl \
+                  --output_dir KB-BERT-ner-regular-tune \
                   --do_train \
                   --do_eval \
                   --do_predict \
                   --task_name ner \
                   --cache_dir models \
                   --return_entity_level_metrics 0 \
-                  --per_device_train_batch_size 4 \
-                  --per_device_eval_batch_size 4 \
+                  --per_device_train_batch_size 60 \
+                  --per_device_eval_batch_size 60 \
                   --overwrite_output_dir \
                   --gradient_accumulation_steps 1
                   --num_train_epochs 5 \
                   --evaluation_strategy steps \
                   --save_strategy steps \
                   --skip_memory_metrics \
+                  --eval_steps 200 \
                   --fp16 \
                   --disable_tqdm 1 \
-                  --tune regular_lower_only_BOHB \
-                  --tune_alg BOHB \
-                  --tune_trials 30 \
-                  --tune_local_dir /home/joey/code/kb/ner_kram/ray_results/
+                  --tune ${TUNE_NAME} \
+                  --tune_alg ${TUNE_ALG} \
+                  --tune_trials 100 \
+                  --tune_local_dir ./ray_results/
                   "
                   # --eval_steps 10000 \
                   # --save_steps 10000 \
