@@ -76,3 +76,4 @@
 - [BOHB: Robust and Efficient Hyperparameter Optimization at Scale](http://proceedings.mlr.press/v80/falkner18a.html)
 - [Population Based Training of Neural Networks](https://arxiv.org/abs/1711.09846)
 - [A System for Massively Parallel Hyperparameter Tuning](https://arxiv.org/abs/1810.05934)
+- [Deepspeed: Curriculum Learning](https://www.deepspeed.ai/tutorials/curriculum-learning/)
