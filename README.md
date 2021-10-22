@@ -44,7 +44,7 @@ Trained & evaluated on uncased with default hyperparameters:
 | F1-Test | 0.8668 | 0.8663 | **0.867**  | 0.8624 | 0.8556 |
 
 PBT, 20 trials, perturbation interval 1, uncased training & evaluation:<br>
-F1-Dev: 0.8684 (does not look very promising with the current settings as it took ~13h with 4 gpus)
+F1-Dev=0.8684 (does not look very promising with the current settings as it took ~13h with 4 gpus)
 
 ##### Development
 
