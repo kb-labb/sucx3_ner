@@ -34,6 +34,18 @@
 
 #### Results
 
+##### Temporary Results For Reference
+
+Trained & evaluated on uncased with default hyperparameters:
+
+|         | BS=16  | BS=32  | BS=64      | BS=128 | BS=256 |
+|---------|--------|--------|------------|--------|--------|
+| F1-Dev  | 0.8651 | 0.8676 | **0.8683** | 0.8635 | 0.8572 |
+| F1-Test | 0.8668 | 0.8663 | **0.867**  | 0.8624 | 0.8556 |
+
+PBT, 20 trials, perturbation interval 1, uncased training & evaluation:<br>
+F1-Dev: 0.8684 (does not look very promising with the current settings as it took ~13h with 4 gpus)
+
 ##### Development
 
 | Tag Family | Trained on        | HPO Alg | cased | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | new-lower-cased-both |
