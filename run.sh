@@ -3,8 +3,8 @@
 which python
 /bin/hostname -s
 
-DATA_VAR="original_tags"
-TUNE_ALG="PBT"  # BOHB
+DATA_VAR="original_tags/lower"
+TUNE_ALG="ASHA"  # BOHB, PBT, or ASHA
 dv=$(echo ${DATA_VAR} | sed 's/\//_/g')
 TUNE_NAME="${dv}_${TUNE_ALG}"
 
@@ -24,8 +24,8 @@ run_cmd="python run_ner.py --model_name_or_path KB/bert-base-swedish-cased \
                   --task_name ner \
                   --cache_dir models \
                   --return_entity_level_metrics 0 \
-                  --per_device_train_batch_size 60 \
-                  --per_device_eval_batch_size 60 \
+                  --per_device_train_batch_size 16 \
+                  --per_device_eval_batch_size 64 \
                   --overwrite_output_dir \
                   --gradient_accumulation_steps 1
                   --num_train_epochs 5 \
@@ -37,9 +37,10 @@ run_cmd="python run_ner.py --model_name_or_path KB/bert-base-swedish-cased \
                   --disable_tqdm 1 \
                   --tune ${TUNE_NAME} \
                   --tune_alg ${TUNE_ALG} \
-                  --tune_trials 100 \
+                  --tune_trials 27 \
                   --tune_local_dir ./ray_results/
                   "
+                  #
                   # --eval_steps 10000 \
                   # --save_steps 10000 \
                   # --max_train_samples 3000
@@ -60,6 +61,15 @@ run_cmd="python run_ner.py --model_name_or_path KB/bert-base-swedish-cased \
 
                   # --learning_rate 9.808539615186473e-06
                   # --weight_decay 0.06887642560886498
+
+                  # after crashed BOHB on VEGA
+                  # --learning_rate 4.9515e-05
+                  # --weight_decay 0.15764
+                  # test f1: 0.8561
+
+                  # ASHA test with 27 trials:
+                  # Current best trial: dd39fe7e with eval_f1=0.871240345297592 and
+                  # parameters={'weight_decay': 0.028092325160590393, 'learning_rate': 2.1576349294034158e-05}
 
 echo $run_cmd
 $run_cmd

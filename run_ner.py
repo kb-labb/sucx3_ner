@@ -165,7 +165,7 @@ class DataTrainingArguments:
         default=None, metadata={"help": "tune with ray tune: give name of the tuning experiment"}
     )
     tune_alg: str = field(
-        default='BOHB', metadata={"help": "The HPO algorithm that ray tune will use, e.g. BOHB or PBT"}
+        default='BOHB', metadata={"help": "The HPO algorithm that ray tune will use, e.g. BOHB, PBT, or ASHA"}
     )
     tune_trials: int = field(
         default=5, metadata={"help": "The number of trials that will be explored in the HPO."}
