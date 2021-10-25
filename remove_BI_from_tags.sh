@@ -1,6 +1,8 @@
 #! /usr/bin/bash
 
 # first argument to script is the data folder
+# bash remove_BI_from_tags.sh ./data
+
 DATA=$1
 for D in simple_tags simple_tags.no_MSR_TME;
 do
