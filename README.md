@@ -13,7 +13,7 @@
 
 ### NER HPO Experiments
 
-- HPO with AHSHA / BOHB / PBT
+- HPO with ASHA / BOHB / PBT
   - original tags
     - cased
     - uncased
@@ -31,6 +31,21 @@
     - ne-lower-cased-mix
     - ne-lower-cased-both
   - look at what hyperparameters and combination lead to good results
+
+#### HPO Method
+
+**Motivation for ASHA**: Authors demonstrate slight advantage over BOHB, even commonly on par with PBT. Huggingface provides an example for HPO with ray tune and BO + ASHA (https://huggingface.co/blog/ray-tune). Furthermore, ASHA is used in [https://arxiv.org/pdf/2106.09204.pdf] and seems to be a practical solution due to the native support of a grace period parameter. Potentially, PBT would provide a better performing model at the cost of having to rely on hyperparameter schedules and depressingly long HPO runs with several TB of disk usage. Perhaps we could overcome some of these issues by tinkering with the PBT parameters, but for now it does not seem to be worth the pain.
+
+BO (TPE) + ASHA, 27 trials with a grace period of 1 epoch with the follow hyperparameter space, inspired by [https://arxiv.org/pdf/2106.09204.pdf]:
+
+```
+learning_rate: ~U(6e-6, 5e-6)
+weight_decay: ~U(0.0, 0.2)
+warmup_ratio: ~U(0.0, 0.12)
+attention_probs_dropout_prob: ~U(0, 0.2)
+hidden_dropout_prob: ~U(0, 0.2)
+per_device_train_batch_size: ~Choice([16, 32, 64])
+```
 
 #### Results
 
@@ -73,7 +88,7 @@ F1-Dev=0.8684 (does not look very promising with the current settings as it took
 | Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio | attention dropout | hidden dropout | batch size | ??? |
 | ---------- | ----------------- | ------- | ------------- | ------------ | ------------ | ----------------- | -------------- | ---------- | --- |
 | Original   | cased             | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
-| Original   | uncased           | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
+| Original   | uncased           | ASHA    | 2.326071e-05  | 0.144090228  | 0.066440712  | 0.148347450       | 0.140120178    | 16         | -   |
 | Original   | uncased-cased-mix | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
 | Simple     | cased             | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
 | Simple     | uncased           | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
