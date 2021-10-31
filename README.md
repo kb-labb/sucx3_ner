@@ -63,25 +63,25 @@ F1-Dev=0.8684 (does not look very promising with the current settings as it took
 
 ##### Development
 
-| Tag Family | Trained on        | HPO Alg | cased | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | new-lower-cased-both |
-| ---------- | ----------------- | ------- | ----- | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Original   | uncased           | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Original   | uncased-cased-mix | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | cased             | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
+| Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
+| ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
+| Original   | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased           | ASHA    | 0.77931| 0.87012 | 0.82533           | 0.82621            | 0.87044  | 0.82607            | 0.82640              |
+| Original   | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased           | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
 
 ##### Test
 
-| Tag Family | Trained on        | HPO Alg | cased | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | new-lower-cased-both |
-| ---------- | ----------------- | ------- | ----- | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Original   | uncased           | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Original   | uncased-cased-mix | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | cased             | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased-cased-mix | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased-cased-mix | BOHB    | -     | -       | -                 | -                  | -        | -                  | -                    |
+| Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
+| ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
+| Original   | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased           | ASHA    | 0.78353| 0.86388 | 0.82469           | 0.82493            | 0.86206  | 0.82550            | 0.82406              |
+| Original   | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased           | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
 
 #### Successful Hyperparameters
 
