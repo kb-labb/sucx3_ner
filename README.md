@@ -36,7 +36,7 @@
 
 **Motivation for ASHA**: Authors demonstrate slight advantage over BOHB, even commonly on par with PBT. Huggingface provides an example for HPO with ray tune and BO + ASHA (https://huggingface.co/blog/ray-tune). Furthermore, ASHA is used in [https://arxiv.org/pdf/2106.09204.pdf] and seems to be a practical solution due to the native support of a grace period parameter. Potentially, PBT would provide a better performing model at the cost of having to rely on hyperparameter schedules and depressingly long HPO runs with several TB of disk usage. Perhaps we could overcome some of these issues by tinkering with the PBT parameters, but for now it does not seem to be worth the pain.
 
-BO (TPE) + ASHA, 27 trials with a grace period of 1 epoch with the follow hyperparameter space, inspired by [https://arxiv.org/pdf/2106.09204.pdf]:
+BO (TPE) + ASHA, 50 trials with a grace period of 1 epoch with the follow hyperparameter space, inspired by [https://arxiv.org/pdf/2106.09204.pdf]:
 
 ```
 learning_rate: ~U(6e-6, 5e-6)
@@ -46,6 +46,24 @@ attention_probs_dropout_prob: ~U(0, 0.2)
 hidden_dropout_prob: ~U(0, 0.2)
 per_device_train_batch_size: ~Choice([16, 32, 64])
 ```
+
+**Why 50 trials?**
+A run with 50 trials took ~6h with 4 GPUs on Vega, longer than this might be infeasible. A longer HPO run could be performed for the final model to get the most out of the fine-tuning. To get a sense of the impact of the number of trials, two HPO runs with BO + ASHA is done with 27 trials and 50 trials:
+
+Doubling the time for the HPO run resulted in an f1-dev and f1-test increase of ~0.005 for uncased and ~0.02 for cased. The hypothesis is that this performance increase will not continue linearly with a larger number of trials, and too extensive HPO is prone to overfitting the dev set and thus not increase the test set performance. Therefore, due to the diminising returns, settling for 50 trials seems reasonable. Below are results for 27 trials vs 50 trials:
+
+Development:
+| Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
+| ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
+| Original   | uncased           | ASHA-27 | 0.77931| 0.87012 | 0.82533           | 0.82621            | 0.87044  | 0.82607            | 0.82640              |
+| Original   | uncased           | ASHA-50 | 0.80012| 0.87619 | 0.83333           | 0.83911            | 0.87444  | 0.83302            | 0.83825              |
+
+Test:
+| Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
+| ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
+| Original   | uncased           | ASHA-27 | 0.78353| 0.86388 | 0.82469           | 0.82493            | 0.86206  | 0.82550            | 0.82406              |
+| Original   | uncased           | ASHA-50 | 0.80281| 0.86625 | 0.83296           | 0.83526            | 0.86453  | 0.83294            | 0.83444              |
+
 
 #### Results
 
