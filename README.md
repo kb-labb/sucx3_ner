@@ -83,7 +83,7 @@ F1-Dev=0.8684 (does not look very promising with the current settings as it took
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | cased             | ASHA    | 0.89669| 0.46699 | 0.72543           | 0.71970            | 0.46980  | 0.72487            | 0.71877              |
 | Original   | uncased           | ASHA    | 0.77931| 0.87012 | 0.82533           | 0.82621            | 0.87044  | 0.82607            | 0.82640              |
 | Original   | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
@@ -94,7 +94,7 @@ F1-Dev=0.8684 (does not look very promising with the current settings as it took
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | cased             | ASHA    | 0.90315| 0.47993 | 0.72141           | 0.72828            | 0.48020  | 0.71946            | 0.72648              |
 | Original   | uncased           | ASHA    | 0.78353| 0.86388 | 0.82469           | 0.82493            | 0.86206  | 0.82550            | 0.82406              |
 | Original   | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
@@ -105,8 +105,8 @@ F1-Dev=0.8684 (does not look very promising with the current settings as it took
 
 | Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio | attention dropout | hidden dropout | batch size |
 | ---------- | ----------------- | ------- | ------------- | ------------ | ------------ | ----------------- | -------------- | ---------- |
-| Original   | cased             | ASHA    | -             | -            | -            | -                 | -              | -          |
-| Original   | uncased           | ASHA    | 2.326071e-05  | 0.144090228  | 0.066440712  | 0.148347450       | 0.140120178    | 16         |
+| Original   | cased             | ASHA    | 4.462279e-05  | 0.049931167  | 0.049692212  | 0.061813731       | 0.131402719    | 32         |
+| Original   | uncased           | ASHA    | 1.994873e-05  | 0.040402108  | 0.058761397  | 0.191723976       | 0.089677054    | 16         |
 | Original   | uncased-cased-mix | ASHA    | -             | -            | -            | -                 | -              | -          |
 | Simple     | cased             | ASHA    | -             | -            | -            | -                 | -              | -          |
 | Simple     | uncased           | ASHA    | -             | -            | -            | -                 | -              | -          |
