@@ -83,34 +83,34 @@ F1-Dev=0.8684 (does not look very promising with the current settings as it took
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Original   | uncased           | ASHA    | 0.77931| 0.87012 | 0.82533           | 0.82621            | 0.87044  | 0.82607            | 0.82640              |
-| Original   | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased           | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 
 ##### Test
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Original   | uncased           | ASHA    | 0.78353| 0.86388 | 0.82469           | 0.82493            | 0.86206  | 0.82550            | 0.82406              |
-| Original   | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | cased             | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased-cased-mix | BOHB    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased           | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 
 #### Successful Hyperparameters
 
-| Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio | attention dropout | hidden dropout | batch size | ??? |
-| ---------- | ----------------- | ------- | ------------- | ------------ | ------------ | ----------------- | -------------- | ---------- | --- |
-| Original   | cased             | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
-| Original   | uncased           | ASHA    | 2.326071e-05  | 0.144090228  | 0.066440712  | 0.148347450       | 0.140120178    | 16         | -   |
-| Original   | uncased-cased-mix | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
-| Simple     | cased             | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
-| Simple     | uncased           | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
-| Simple     | uncased-cased-mix | BOHB    | -             | -            | -            | -                 | -              | -          | -   |
+| Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio | attention dropout | hidden dropout | batch size |
+| ---------- | ----------------- | ------- | ------------- | ------------ | ------------ | ----------------- | -------------- | ---------- |
+| Original   | cased             | ASHA    | -             | -            | -            | -                 | -              | -          |
+| Original   | uncased           | ASHA    | 2.326071e-05  | 0.144090228  | 0.066440712  | 0.148347450       | 0.140120178    | 16         |
+| Original   | uncased-cased-mix | ASHA    | -             | -            | -            | -                 | -              | -          |
+| Simple     | cased             | ASHA    | -             | -            | -            | -                 | -              | -          |
+| Simple     | uncased           | ASHA    | -             | -            | -            | -                 | -              | -          |
+| Simple     | uncased-cased-mix | ASHA    | -             | -            | -            | -                 | -              | -          |
 
 ### Potentially Interesting Papers
 
