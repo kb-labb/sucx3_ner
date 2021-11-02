@@ -1,9 +1,18 @@
 #!/usr/bin/bash
 
+# API key should probably not be hard coded into version control =)
+# Add your wandb api key and wandb username here
+wandb login TODO_add_wandb_api_key_here
+export WANDB_ENTITY=joeyohman
+export WANDB_PROJECT=ner_kram
+export WANDB_MODE=offline
+
 which python
 /bin/hostname -s
 
-DATA_VAR="original_tags/lower"
+# DATA_VAR="original_tags/lower"
+# DATA_VAR="original_tags"
+DATA_VAR="original_tags/lower_mix"
 TUNE_ALG="ASHA"  # BOHB, PBT, or ASHA
 dv=$(echo ${DATA_VAR} | sed 's/\//_/g')
 TUNE_NAME="${dv}_${TUNE_ALG}"
@@ -13,19 +22,28 @@ TUNE_NAME="${dv}_${TUNE_ALG}"
   #                  --validation_file ./data/martin_data/dev.lower.only.jsonl \
   #                  --test_file ./data/martin_data/test.lower.only.jsonl \
 
-run_cmd="python run_ner.py --model_name_or_path KB/bert-base-swedish-cased \
+# For HPO
+# --model_name_or_path KB/bert-base-swedish-cased \
+# --do_train \
+
+# For Eval All
+# --model_name_or_path ./best_tuned_models/${TUNE_NAME} \
+# --eval_all \
+
+run_cmd="python run_ner.py
+                  --model_name_or_path ./best_tuned_models/${TUNE_NAME} \
+                  --eval_all \
                   --train_file ./data/${DATA_VAR}/train.jsonl \
                   --validation_file ./data/${DATA_VAR}/dev.jsonl \
                   --test_file ./data/${DATA_VAR}/test.jsonl \
                   --output_dir KB-BERT-ner-regular-tune \
-                  --do_train \
                   --do_eval \
                   --do_predict \
                   --task_name ner \
                   --cache_dir models \
                   --return_entity_level_metrics 0 \
-                  --per_device_train_batch_size 16 \
-                  --per_device_eval_batch_size 64 \
+                  --per_device_train_batch_size 64 \
+                  --per_device_eval_batch_size 128 \
                   --overwrite_output_dir \
                   --gradient_accumulation_steps 1
                   --num_train_epochs 5 \
@@ -37,10 +55,9 @@ run_cmd="python run_ner.py --model_name_or_path KB/bert-base-swedish-cased \
                   --disable_tqdm 1 \
                   --tune ${TUNE_NAME} \
                   --tune_alg ${TUNE_ALG} \
-                  --tune_trials 27 \
+                  --tune_trials 50 \
                   --tune_local_dir ./ray_results/
                   "
-                  #
                   # --eval_steps 10000 \
                   # --save_steps 10000 \
                   # --max_train_samples 3000

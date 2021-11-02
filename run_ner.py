@@ -19,6 +19,7 @@ Fine-tuning the library models for token classification.
 # You can also adapt this script on your own token classification task and datasets. Pointers for this are left as
 # comments.
 import datetime
+import json
 import logging
 import os
 import sys
@@ -173,6 +174,10 @@ class DataTrainingArguments:
     tune_local_dir: str = field(
         default="~/ray_results/", metadata={"help": "The directory in which the ray tune experiment folder will be."}
     )
+    eval_all: bool = field(
+        default=False,
+        metadata={"help": "Evaluate the model on all dev & test sets."}
+    )
 
     def __post_init__(self):
         if self.dataset_name is None and self.train_file is None and self.validation_file is None:
@@ -187,7 +192,9 @@ class DataTrainingArguments:
         self.task_name = self.task_name.lower()
 
 
-def main():
+EVAL_LOGS_DIR = "./eval_logs"
+EVAL_LOGS_FILE = ""
+def args_wrapper_main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
@@ -199,6 +206,60 @@ def main():
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+
+    if data_args.eval_all:
+        # TAG_FORMATS = ["original_tags", "really_simple_tags"]
+        CASE_FORMATS = ["cased", "lower", "lower_mix", "lower_both", "ne_lower", "ne_lower_mix", "ne_lower_both"]
+        base_data_path_dev = "./data/{}/{}/dev.jsonl"
+        base_data_path_test = "./data/{}/{}/test.jsonl"
+        from pathlib import Path
+        Path(EVAL_LOGS_DIR).mkdir(parents=True, exist_ok=True)
+
+        global EVAL_LOGS_FILE
+        now = datetime.datetime.now()
+        dt_string = now.strftime("%Y-%m-%d_%H:%M:%S")
+        EVAL_LOGS_FILE = f"{EVAL_LOGS_DIR}/{model_args.model_name_or_path.split('/')[-1]}" + "_" + dt_string
+
+        # for tag_format in TAG_FORMATS:
+        tag_format = "original_tags" if "original_tags" in data_args.tune else "really_simple_tags"
+        for case_format in CASE_FORMATS:
+            dev_path = base_data_path_dev.format(tag_format, case_format)
+            test_path = base_data_path_test.format(tag_format, case_format)
+            if case_format == "cased":
+                dev_path = dev_path.replace(case_format + "/", "")
+                test_path = test_path.replace(case_format + "/", "")
+
+            data_args.validation_file = dev_path
+            data_args.test_file = test_path
+            with open(EVAL_LOGS_FILE, 'a') as f:
+                f.write(f"\n************\n{tag_format}/{case_format}")
+            main(model_args, data_args, training_args)
+        return
+
+    main(model_args, data_args, training_args)
+
+
+def write_res_to_file(metrics):
+    assert EVAL_LOGS_FILE != ""
+    with open(EVAL_LOGS_FILE, 'a') as f:
+        metrics_str = json.dumps(metrics)
+        f.write("\n" + metrics_str)
+
+
+def main(model_args, data_args, training_args):
+    # See all possible arguments in src/transformers/training_args.py
+    # or by passing the --help flag to this script.
+    # We now keep distinct sets of args, for a cleaner separation of concerns.
+
+    """
+    parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments))
+    if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
+        # If we pass only one argument to the script and it's the path to a json file,
+        # let's parse it to get our arguments.
+        model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
+    else:
+        model_args, data_args, training_args = parser.parse_args_into_dataclasses()
+    """
 
     # Detecting last checkpoint.
     last_checkpoint = None
@@ -456,18 +517,26 @@ def main():
                 "accuracy": results["overall_accuracy"],
             }
 
-    def model_init():
+    def model_init(trial=None):
+        conf = config
+        if trial is not None:
+            conf.update({
+                "hidden_dropout_prob": trial['hidden_dropout_prob'],
+                "attention_probs_dropout_prob": trial['attention_probs_dropout_prob']
+            })
+
         model = AutoModelForTokenClassification.from_pretrained(
             model_args.model_name_or_path,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
-            config=config,
+            config=conf,
             # cache_dir=model_args.cache_dir,
             revision=model_args.model_revision,
             use_auth_token=True if model_args.use_auth_token else None,
         )
+
         return model
         # return AutoModelForTokenClassification.from_pretrained(
-                    # model_args.model_name_or_path, return_dict=True)
+        # model_args.model_name_or_path, return_dict=True)
 
     # Uncomment to shard and use small subset of dataset for testing purposes
     # train_dataset = train_dataset.shard(index=1, num_shards=50)
@@ -528,6 +597,8 @@ def main():
         logger.info("*** Evaluate ***")
 
         metrics = trainer.evaluate()
+        if data_args.eval_all:
+            write_res_to_file(metrics)
 
         max_val_samples = data_args.max_val_samples if data_args.max_val_samples is not None else len(eval_dataset)
         metrics["eval_samples"] = min(max_val_samples, len(eval_dataset))
@@ -540,6 +611,8 @@ def main():
         logger.info("*** Predict ***")
 
         predictions, labels, metrics = trainer.predict(test_dataset)
+        if data_args.eval_all:
+            write_res_to_file(metrics)
         predictions = np.argmax(predictions, axis=2)
 
         # Remove ignored index (special tokens)
@@ -558,6 +631,14 @@ def main():
                 for prediction in true_predictions:
                     writer.write(" ".join(prediction) + "\n")
 
+        # Print evaluation dataset names
+        print("Model name or path:")
+        print(model_args.model_name_or_path)
+        print("Validation file:")
+        print(data_args.validation_file)
+        print("Test file:")
+        print(data_args.test_file)
+
 
 def _mp_fn(index):
     # For xla_spawn (TPUs)
@@ -566,7 +647,7 @@ def _mp_fn(index):
 
 def mainTimeWrapper():
     start_time = time.time()
-    main()
+    args_wrapper_main()
     time_str = datetime.timedelta(seconds=round(time.time() - start_time))
     print(f"Time Elapsed Total (h:mm:ss): {time_str}")
 
