@@ -2,6 +2,8 @@
 
 ## ToDo
 
+- add comparative baselines: `stanza`, `spacy`
+
 ### Questions
 
 - Which HPO method do we trust/like?
