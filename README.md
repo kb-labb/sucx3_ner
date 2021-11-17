@@ -81,6 +81,15 @@ Trained & evaluated on uncased with default hyperparameters:
 PBT, 20 trials, perturbation interval 1, uncased training & evaluation:<br>
 F1-Dev=0.8684 (does not look very promising with the current settings as it took ~13h with 4 gpus)
 
+
+###### Baselines
+Each column illustrates one setting of tag & case type with batch size 64 and original hyperparameters.
+
+|         | org/uncased | org/cased | org/mixed | simple/uncased | simple/cased | simple/mixed |
+|---------|-------------|-----------|-----------|----------------|--------------|--------------|
+| F1-Dev  | 0.8683      | 0.8901    | 0.866     | 0.912          | 0.9359       | 0.9111       |
+| F1-Test | 0.867       | 0.8901    | 0.8687    | 0.9017         | 0.9346       | 0.9118       |
+
 ##### Development
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
