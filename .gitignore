@@ -136,3 +136,5 @@ ray_results
 models
 data
 tmp
+
+wandb*
