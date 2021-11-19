@@ -94,34 +94,62 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
+| Original   | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+
+##### Test
+
+| Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
+| ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
+| Original   | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+
+#### Successful Hyperparameters
+
+| Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio |
+| ---------- | ----------------- | ------- | ------------- | ------------ | ------------ |
+| Original   | cased             | RS      | -             | -            | -            |
+| Original   | uncased           | RS      | -             | -            | -            |
+| Original   | uncased-cased-mix | RS      | -             | -            | -            |
+| Simple     | cased             | RS      | -             | -            | -            |
+| Simple     | uncased           | RS      | -             | -            | -            |
+| Simple     | uncased-cased-mix | RS      | -             | -            | -            |
+
+
+#### Old ASHA Results
+
+##### Development (Old)
+
+| Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
+| ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
 | Original   | cased             | ASHA    | 0.89669| 0.46699 | 0.72543           | 0.71970            | 0.46980  | 0.72487            | 0.71877              |
 | Original   | uncased           | ASHA    | 0.77931| 0.87012 | 0.82533           | 0.82621            | 0.87044  | 0.82607            | 0.82640              |
 | Original   | uncased-cased-mix | ASHA    | 0.88407| 0.85457 | 0.86897           | 0.86949            | 0.84911  | 0.86641            | 0.86681              |
-| Simple     | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 
-##### Test
+##### Test (Old)
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
 | Original   | cased             | ASHA    | 0.90315| 0.47993 | 0.72141           | 0.72828            | 0.48020  | 0.71946            | 0.72648              |
 | Original   | uncased           | ASHA    | 0.78353| 0.86388 | 0.82469           | 0.82493            | 0.86206  | 0.82550            | 0.82406              |
 | Original   | uncased-cased-mix | ASHA    | 0.88791| 0.85132 | 0.86593           | 0.86980            | 0.84549  | 0.86198            | 0.86694              |
-| Simple     | cased             | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased-cased-mix | ASHA    | -      | -       | -                 | -                  | -        | -                  | -                    |
 
-#### Successful Hyperparameters
+#### Successful Hyperparameters (Old)
 
 | Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio | attention dropout | hidden dropout | batch size |
 | ---------- | ----------------- | ------- | ------------- | ------------ | ------------ | ----------------- | -------------- | ---------- |
 | Original   | cased             | ASHA    | 4.462279e-05  | 0.049931167  | 0.049692212  | 0.061813731       | 0.131402719    | 32         |
 | Original   | uncased           | ASHA    | 1.994873e-05  | 0.040402108  | 0.058761397  | 0.191723976       | 0.089677054    | 16         |
 | Original   | uncased-cased-mix | ASHA    | 4.567007e-05  | 0.130067974  | 0.018670453  | 0.018893785       | 0.182467284    | 64         |
-| Simple     | cased             | ASHA    | -             | -            | -            | -                 | -              | -          |
-| Simple     | uncased           | ASHA    | -             | -            | -            | -                 | -              | -          |
-| Simple     | uncased-cased-mix | ASHA    | -             | -            | -            | -                 | -              | -          |
+
 
 ### Potentially Interesting Papers
 
