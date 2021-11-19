@@ -85,17 +85,17 @@ F1-Dev=0.8684 (does not look very promising with the current settings as it took
 ###### Baselines
 Each column illustrates one setting of tag & case type with batch size 64 and original hyperparameters.
 
-|         | org/uncased | org/cased | org/mixed | simple/uncased | simple/cased | simple/mixed |
+|         | org/cased | org/uncased | org/mixed | simple/cased | simple/uncased | simple/mixed |
 |---------|-------------|-----------|-----------|----------------|--------------|--------------|
-| F1-Dev  | 0.8683      | 0.8901    | 0.866     | 0.912          | 0.9359       | 0.9111       |
-| F1-Test | 0.867       | 0.8901    | 0.8687    | 0.9017         | 0.9346       | 0.9118       |
+| F1-Dev  | 0.8901      | 0.8683    | 0.866     | 0.9359         | 0.912        | 0.9111       |
+| F1-Test | 0.8901      | 0.867     | 0.8687    | 0.9346         | 0.9017       | 0.9118       |
 
 ##### Development
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
 | Original   | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Original   | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased           | RS      | 0.7847 | 0.8713  | 0.8278            | 0.8293             | 0.8695   | 0.8263             | 0.8285               |
 | Original   | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
@@ -106,7 +106,7 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
 | Original   | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Original   | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased           | RS      | 0.7811 | 0.8656  | 0.8248            | 0.8245             | 0.8649   | 0.8245             | 0.8242               |
 | Original   | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
@@ -116,7 +116,7 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 
 | Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio |
 | ---------- | ----------------- | ------- | ------------- | ------------ | ------------ |
-| Original   | cased             | RS      | -             | -            | -            |
+| Original   | cased             | RS      | 5e-05         | 0.10         | 0.08         |
 | Original   | uncased           | RS      | -             | -            | -            |
 | Original   | uncased-cased-mix | RS      | -             | -            | -            |
 | Simple     | cased             | RS      | -             | -            | -            |
