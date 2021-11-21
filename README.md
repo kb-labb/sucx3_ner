@@ -116,8 +116,8 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 
 | Tag Family | Trained on        | HPO Alg | learning rate | weight decay | warmup ratio |
 | ---------- | ----------------- | ------- | ------------- | ------------ | ------------ |
-| Original   | cased             | RS      | 5e-05         | 0.10         | 0.08         |
-| Original   | uncased           | RS      | -             | -            | -            |
+| Original   | cased             | RS      | 7e-05         | 0.15         | 0.04         |
+| Original   | uncased           | RS      | 5e-05         | 0.10         | 0.08         |
 | Original   | uncased-cased-mix | RS      | -             | -            | -            |
 | Simple     | cased             | RS      | -             | -            | -            |
 | Simple     | uncased           | RS      | -             | -            | -            |
