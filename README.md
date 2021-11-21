@@ -49,7 +49,17 @@ hidden_dropout_prob: ~U(0, 0.2)
 per_device_train_batch_size: ~Choice([16, 32, 64])
 ```
 
-**Why 50 trials?**
+**Motivation for RS instead of ASHA**<br>
+Early stopping terminates a lot of trials with promising converged performance but allows for exploring a larger number of trials. Random Search with no BO results in a straight-forward analysis of the hyperparameter space. A large hyperparameter space with many hyperparameters requires more time to find good local optimas and is prone to overfitting on the dev-set, and also entails more complex results and prohibits an intuitive understanding of the hyperparameters and their relationships. Therefore, we reduced the search space to:
+
+```
+learning_rate: ~Choice([2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 7e-5, 8e-5])
+weight_decay: ~Choice([0.0, 0.05, 0.10, 0.15])
+warmup_ratio: ~Choice([0.0, 0.04, 0.08, 0.12])
+```
+The learning rate space is more fine-grained due to its importance.
+
+**Why 50 trials?**<br>
 A run with 50 trials took ~6h with 4 GPUs on Vega, longer than this might be infeasible. A longer HPO run could be performed for the final model to get the most out of the fine-tuning. To get a sense of the impact of the number of trials, two HPO runs with BO + ASHA is done with 27 trials and 50 trials:
 
 Doubling the time for the HPO run resulted in an f1-dev and f1-test increase of ~0.005 for uncased and ~0.02 for cased. The hypothesis is that this performance increase will not continue linearly with a larger number of trials, and too extensive HPO is prone to overfitting the dev set and thus not increase the test set performance. Therefore, due to the diminising returns, settling for 50 trials seems reasonable. Below are results for 27 trials vs 50 trials:
@@ -66,6 +76,8 @@ Test:
 | Original   | uncased           | ASHA-27 | 0.78353| 0.86388 | 0.82469           | 0.82493            | 0.86206  | 0.82550            | 0.82406              |
 | Original   | uncased           | ASHA-50 | 0.80281| 0.86625 | 0.83296           | 0.83526            | 0.86453  | 0.83294            | 0.83444              |
 
+
+**When switching to pure RS, we lowered the number of trials to 30.**
 
 #### Results
 
@@ -94,9 +106,9 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | cased             | RS      | 0.8951 | 0.4067  | 0.7054            | 0.6987             | 0.4110   | 0.7045             | 0.6985               |
 | Original   | uncased           | RS      | 0.7847 | 0.8713  | 0.8278            | 0.8293             | 0.8695   | 0.8263             | 0.8285               |
-| Original   | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased-cased-mix | RS      | 0.8821 | 0.8573  | 0.8702            | 0.8698             | 0.8504   | 0.8671             | 0.866                |
 | Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
@@ -105,9 +117,9 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
 | ---------- | ----------------- | ------- | -----  | ------- | ----------------- | ------------------ | -------- | ------------------ | -------------------- |
-| Original   | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | cased             | RS      | 0.8978 | 0.4053  | 0.6940            | 0.7000             | 0.4103   | 0.6924             | 0.6998               |
 | Original   | uncased           | RS      | 0.7811 | 0.8656  | 0.8248            | 0.8245             | 0.8649   | 0.8245             | 0.8242               |
-| Original   | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Original   | uncased-cased-mix | RS      | 0.8833 | 0.8523  | 0.8661            | 0.8680             | 0.8489   | 0.8650             | 0.8663               |
 | Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 | Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
@@ -118,7 +130,7 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | ---------- | ----------------- | ------- | ------------- | ------------ | ------------ |
 | Original   | cased             | RS      | 7e-05         | 0.15         | 0.04         |
 | Original   | uncased           | RS      | 5e-05         | 0.10         | 0.08         |
-| Original   | uncased-cased-mix | RS      | -             | -            | -            |
+| Original   | uncased-cased-mix | RS      | 8e-05         | 0.15         | 0.12         |
 | Simple     | cased             | RS      | -             | -            | -            |
 | Simple     | uncased           | RS      | -             | -            | -            |
 | Simple     | uncased-cased-mix | RS      | -             | -            | -            |
