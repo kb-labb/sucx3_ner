@@ -136,6 +136,14 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Simple     | uncased-cased-mix | RS      | -             | -            | -            |
 
 
+###### Baselines Comparison
+Each column illustrates one setting of tag & case type with the performance difference after HPO: `F1(HPO) - F1(baseline)`
+
+|         | org/cased | org/uncased | org/mixed | simple/cased | simple/uncased | simple/mixed |
+|---------|-------------|-----------|-----------|----------------|--------------|--------------|
+| F1-Dev  | +0.005     | +0.003    | +0.0042    | -0.0014        | +0.0037      | -       |
+| F1-Test | +0.0077    | -0.0014   | -0.0026    | -0.0042        | +0.0058      | -       |
+
 #### Old ASHA Results
 
 ##### Development (Old)
