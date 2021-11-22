@@ -102,6 +102,14 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | F1-Dev  | 0.8901      | 0.8683    | 0.866     | 0.9359         | 0.912        | 0.9111       |
 | F1-Test | 0.8901      | 0.867     | 0.8687    | 0.9346         | 0.9017       | 0.9118       |
 
+
+**Original Hyperparameters:** <br>
+```
+Learning Rate: 5-05
+Weight Decay: 0.0
+Warmup Ratio: 0.0
+```
+
 ##### Development
 
 | Tag Family | Trained on        | HPO Alg | cased  | uncased | uncased-cased-mix | uncased-cased-both | ne-lower | ne-lower-cased-mix | ne-lower-cased-both  |
