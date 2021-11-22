@@ -109,8 +109,8 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Original   | cased             | RS      | 0.8951 | 0.4067  | 0.7054            | 0.6987             | 0.4110   | 0.7045             | 0.6985               |
 | Original   | uncased           | RS      | 0.7847 | 0.8713  | 0.8278            | 0.8293             | 0.8695   | 0.8263             | 0.8285               |
 | Original   | uncased-cased-mix | RS      | 0.8821 | 0.8573  | 0.8702            | 0.8698             | 0.8504   | 0.8671             | 0.866                |
-| Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | RS      | 0.9345 | 0.3037  | 0.7035            | 0.6974             | 0.3038   | 0.6995             | 0.6941               |
+| Simple     | uncased           | RS      | 0.8361 | 0.9157  | 0.8753            | 0.8774             | 0.9154   | 0.8754             | 0.8773               |
 | Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 
 ##### Test
@@ -120,8 +120,8 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Original   | cased             | RS      | 0.8978 | 0.4053  | 0.6940            | 0.7000             | 0.4103   | 0.6924             | 0.6998               |
 | Original   | uncased           | RS      | 0.7811 | 0.8656  | 0.8248            | 0.8245             | 0.8649   | 0.8245             | 0.8242               |
 | Original   | uncased-cased-mix | RS      | 0.8833 | 0.8523  | 0.8661            | 0.8680             | 0.8489   | 0.8650             | 0.8663               |
-| Simple     | cased             | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
-| Simple     | uncased           | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | cased             | RS      | 0.9304 | 0.2963  | 0.6940            | 0.6929             | 0.2902   | 0.6879             | 0.6861               |
+| Simple     | uncased           | RS      | 0.8299 | 0.9075  | 0.8687            | 0.8702             | 0.9074   | 0.8685             | 0.8702               |
 | Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
 
 #### Successful Hyperparameters
@@ -131,8 +131,8 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Original   | cased             | RS      | 7e-05         | 0.15         | 0.04         |
 | Original   | uncased           | RS      | 5e-05         | 0.10         | 0.08         |
 | Original   | uncased-cased-mix | RS      | 8e-05         | 0.15         | 0.12         |
-| Simple     | cased             | RS      | -             | -            | -            |
-| Simple     | uncased           | RS      | -             | -            | -            |
+| Simple     | cased             | RS      | 5e-05         | 0.05         | 0.04         |
+| Simple     | uncased           | RS      | 8e-05         | 0.05         | 0.04         |
 | Simple     | uncased-cased-mix | RS      | -             | -            | -            |
 
 
