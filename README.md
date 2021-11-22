@@ -111,7 +111,7 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Original   | uncased-cased-mix | RS      | 0.8821 | 0.8573  | 0.8702            | 0.8698             | 0.8504   | 0.8671             | 0.866                |
 | Simple     | cased             | RS      | 0.9345 | 0.3037  | 0.7035            | 0.6974             | 0.3038   | 0.6995             | 0.6941               |
 | Simple     | uncased           | RS      | 0.8361 | 0.9157  | 0.8753            | 0.8774             | 0.9154   | 0.8754             | 0.8773               |
-| Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | RS      | 0.9275 | 0.9078  | 0.9185            | 0.9177             | 0.9029   | 0.9155             | 0.9153               |
 
 ##### Test
 
@@ -122,7 +122,7 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Original   | uncased-cased-mix | RS      | 0.8833 | 0.8523  | 0.8661            | 0.8680             | 0.8489   | 0.8650             | 0.8663               |
 | Simple     | cased             | RS      | 0.9304 | 0.2963  | 0.6940            | 0.6929             | 0.2902   | 0.6879             | 0.6861               |
 | Simple     | uncased           | RS      | 0.8299 | 0.9075  | 0.8687            | 0.8702             | 0.9074   | 0.8685             | 0.8702               |
-| Simple     | uncased-cased-mix | RS      | -      | -       | -                 | -                  | -        | -                  | -                    |
+| Simple     | uncased-cased-mix | RS      | 0.9219 | 0.8988  | 0.9083            | 0.9104             | 0.8950   | 0.9064             | 0.9085               |
 
 #### Successful Hyperparameters
 
@@ -133,7 +133,7 @@ Each column illustrates one setting of tag & case type with batch size 64 and or
 | Original   | uncased-cased-mix | RS      | 8e-05         | 0.15         | 0.12         |
 | Simple     | cased             | RS      | 5e-05         | 0.05         | 0.04         |
 | Simple     | uncased           | RS      | 8e-05         | 0.05         | 0.04         |
-| Simple     | uncased-cased-mix | RS      | -             | -            | -            |
+| Simple     | uncased-cased-mix | RS      | 6e-05         | 0.05         | 0.12         |
 
 
 ###### Baselines Comparison
@@ -141,8 +141,8 @@ Each column illustrates one setting of tag & case type with the performance diff
 
 |         | org/cased | org/uncased | org/mixed | simple/cased | simple/uncased | simple/mixed |
 |---------|-------------|-----------|-----------|----------------|--------------|--------------|
-| F1-Dev  | +0.005     | +0.003    | +0.0042    | -0.0014        | +0.0037      | -       |
-| F1-Test | +0.0077    | -0.0014   | -0.0026    | -0.0042        | +0.0058      | -       |
+| F1-Dev  | +0.005     | +0.003    | +0.0042    | -0.0014        | +0.0037      | +0.0074      |
+| F1-Test | +0.0077    | -0.0014   | -0.0026    | -0.0042        | +0.0058      | -0.0035      |
 
 #### Old ASHA Results
 
