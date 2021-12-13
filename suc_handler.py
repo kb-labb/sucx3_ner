@@ -23,6 +23,8 @@ tag_map = {"person": "PRS",
            "myth": "PRS",
            }
 
+# TODO remove swapping of inst to LOC as this gets to annoying when dealing
+# with larger datasets
 with open("inst_LOC.json") as f:
     inst_LOC = json.load(f)
 
@@ -83,12 +85,12 @@ def check_tag_match(sentence: xml.etree.ElementTree.Element,
         elif tag_a in tag_map and tag_map[tag_a] == tag_b and bio_a == bio_b:
             tags.append(tag_b)
             bio.append(bio_a)
-        elif tag_a == "inst" and \
-                tag_b == "LOC" and \
-                inst_LOC.get(token.text, None) == ["inst", "LOC"] and \
-                bio_a == bio_b:
-            tags.append("LOC")
-            bio.append(bio_a)
+        # elif tag_a == "inst" and \
+        #         tag_b == "LOC" and \
+        #         inst_LOC.get(token.text, None) == ["inst", "LOC"] and \
+        #         bio_a == bio_b:
+        #     tags.append("LOC")
+        #     bio.append(bio_a)
         elif tag_a in tag_map and tag_b is None:
             tags.append(tag_map[tag_a])
             bio.append(bio_a)

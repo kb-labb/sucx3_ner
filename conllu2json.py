@@ -8,6 +8,7 @@ a little script transforming conllu to json
 from typing import List, Iterable, Any, Dict, NamedTuple
 import json
 from colorama import Fore, Back, Style
+from pprint import pprint
 
 
 fore = [Fore.BLACK, Fore.BLUE, Fore.CYAN, Fore.GREEN, Fore.LIGHTBLACK_EX,
@@ -36,7 +37,7 @@ def read_conllu(fn: str) -> Iterable[Sentence]:
                 yield Sentence(_id, tokens)
                 tokens = []
             else:
-                tokens.append(line.split())
+                tokens.append(line.strip().split("\t"))
 
 
 def debug_print(tokens: List[List[str]]) -> None:
@@ -62,17 +63,19 @@ def conllu_to_json(fn_conllu: str, fn_json: str) -> None:
                         t = ns[i][0:2] + ["/"] + ns[i][2:]
                         ns[i] = t
                 sentence = Sentence(sentence.id, ns)
+                # pprint([(x, y, len(y)) for x, y in zip((len(x) == 10 for x in sentence.tokens), sentence.tokens) if not x])
+            else:
                 assert all(len(x) == 10 for x in sentence.tokens)
-            columns = list(zip(*sentence.tokens))
-            tokens = list(columns[1])
-            pos = list(columns[3])
-            ner = ["-".join(x) if x[0] != "O" else "O" for x in
-                   # zip(columns[10], columns[11])]  # sic
-                   zip(columns[8], columns[9])]  # suc
-            jsen["tokens"] = tokens
-            jsen["pos_tags"] = pos
-            jsen["ner_tags"] = ner
-            print(json.dumps(jsen), file=fh)
+                columns = list(zip(*sentence.tokens))
+                tokens = list(columns[1])
+                pos = list(columns[3])
+                ner = ["-".join(x) if x[0] != "O" else "O" for x in
+                       # zip(columns[10], columns[11])]  # sic
+                       zip(columns[8], columns[9])]  # suc
+                jsen["tokens"] = tokens
+                jsen["pos_tags"] = pos
+                jsen["ner_tags"] = ner
+                print(json.dumps(jsen), file=fh)
 
 
 if __name__ == "__main__":

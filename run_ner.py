@@ -45,6 +45,8 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 from transformers.utils import check_min_version
 
+os.environ["WANDB_DISABLED"] = "true"
+
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 # check_min_version("4.5.0.dev0")
@@ -355,8 +357,8 @@ def main(model_args, data_args, training_args):
         label_list = get_label_list(datasets["train"][label_column_name])
         label_to_id = {l: i for i, l in enumerate(label_list)}
     num_labels = len(label_list)
-    print(label_list)
-    print(num_labels)
+    logger.info(label_list)
+    logger.info(num_labels)
 
     # Load pretrained model and tokenizer
     #
@@ -378,6 +380,9 @@ def main(model_args, data_args, training_args):
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
         add_prefix_space=True if model_args.add_prefix_space else False,
+        truncation=True,
+        max_length=512,
+        model_max_length=512,
     )
     """
     model = AutoModelForTokenClassification.from_pretrained(
@@ -426,8 +431,8 @@ def main(model_args, data_args, training_args):
                     try:
                         label_ids.append(label_to_id[label[word_idx]])
                     except KeyError:
-                        print("Did not see that label before. Will be ignored...")
-                        print(word_idx, label[word_idx])
+                        logger.info("Did not see that label before. Will be ignored...")
+                        logger.info(word_idx, label[word_idx])
                         label_ids.append(-100)
                 # For the other tokens in a word, we set the label to either the current label or -100, depending on
                 # the label_all_tokens flag.
@@ -532,6 +537,7 @@ def main(model_args, data_args, training_args):
             # cache_dir=model_args.cache_dir,
             revision=model_args.model_revision,
             use_auth_token=True if model_args.use_auth_token else None,
+            # ignore_mismatched_sizes=True
         )
 
         return model
@@ -568,15 +574,15 @@ def main(model_args, data_args, training_args):
             hps_start_time = time.time()
             best_run = hyperparameter_tune(trainer, training_args, data_args)
             # Configure trainer object to use best hyperparameters found
-            print("***** Best Hyperparameters found *****")
+            logger.info("***** Best Hyperparameters found *****")
             for n, v in best_run.hyperparameters.items():
                 if n != 'max_steps':  # Use original max_steps
                     setattr(trainer.args, n, v)
-                    print(f"{n}: {v}")
+                    logger.info(f"{n}: {v}")
 
             time_str_hps = datetime.timedelta(seconds=round(time.time() - hps_start_time))
-            print(f"Time Elapsed HPS (h:mm:ss): {time_str_hps}")
-            print("*" * 10)
+            logger.info(f"Time Elapsed HPS (h:mm:ss): {time_str_hps}")
+            logger.info("*" * 10)
             return
 
         train_result = trainer.train(resume_from_checkpoint=checkpoint)
@@ -632,12 +638,12 @@ def main(model_args, data_args, training_args):
                     writer.write(" ".join(prediction) + "\n")
 
         # Print evaluation dataset names
-        print("Model name or path:")
-        print(model_args.model_name_or_path)
-        print("Validation file:")
-        print(data_args.validation_file)
-        print("Test file:")
-        print(data_args.test_file)
+        logger.info("Model name or path:")
+        logger.info(model_args.model_name_or_path)
+        logger.info("Validation file:")
+        logger.info(data_args.validation_file)
+        logger.info("Test file:")
+        logger.info(data_args.test_file)
 
 
 def _mp_fn(index):
@@ -649,7 +655,7 @@ def mainTimeWrapper():
     start_time = time.time()
     args_wrapper_main()
     time_str = datetime.timedelta(seconds=round(time.time() - start_time))
-    print(f"Time Elapsed Total (h:mm:ss): {time_str}")
+    logger.info(f"Time Elapsed Total (h:mm:ss): {time_str}")
 
 
 if __name__ == "__main__":
