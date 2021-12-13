@@ -189,3 +189,28 @@ Each column illustrates one setting of tag & case type with the performance diff
 - [Population Based Training of Neural Networks](https://arxiv.org/abs/1711.09846)
 - [A System for Massively Parallel Hyperparameter Tuning](https://arxiv.org/abs/1810.05934)
 - [Deepspeed: Curriculum Learning](https://www.deepspeed.ai/tutorials/curriculum-learning/)
+
+## Stanza Results
+
+Originial Tags, cased, with stanza, no char-lm
+
+`python3 -m stanza.models.ner_tagger --train_file train.stanza --eval_file dev.stanza --wordvec_pretrain_file ~/stanza_resources/sv/pretrain/talbanken.pt --lang sv --shorthand sv_talbanken --mode train`
+
+### Dev Set
+
+Score by entity:
+Prec.   Rec.    F1
+84.16   72.15   77.70
+Score by token:
+Prec.   Rec.    F1
+82.91   73.03   77.66
+
+
+### Test Set 
+
+Score by entity:
+Prec.   Rec.    F1
+83.92   72.34   77.70
+Score by token:
+Prec.   Rec.    F1
+83.34   73.44   78.08
