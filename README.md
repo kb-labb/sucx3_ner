@@ -1,5 +1,4 @@
-# ner_kram
-
+# UC 3.1
 ## ToDo
 
 - add comparative baselines: `stanza`, `spacy`
