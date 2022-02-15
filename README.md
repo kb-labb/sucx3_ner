@@ -1,4 +1,4 @@
-# SUC 3.1
+# SUCX 3.0 - NER
 ## ToDo
 
 - add comparative baselines: `stanza`, `spacy`
